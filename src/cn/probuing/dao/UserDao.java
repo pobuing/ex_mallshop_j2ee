@@ -3,6 +3,7 @@ package cn.probuing.dao;
 import cn.probuing.domain.User;
 import cn.probuing.utils.DataSourceUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.SQLException;
 
@@ -42,6 +43,20 @@ public class UserDao {
         QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
         String sql = "update user set state=? where code=?";
         runner.update(sql, 1, activeCode);
+
+    }
+
+    /**
+     * 数据库查询用户名是否存在
+     *
+     * @param username 要查询的用户名
+     * @return 查到的数目
+     * @throws SQLException
+     */
+    public Long checkUserName(String username) throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "select count(*) from user where username=?";
+        return (Long) runner.query(sql, new ScalarHandler(), username);
 
     }
 }

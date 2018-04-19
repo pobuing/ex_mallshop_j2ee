@@ -30,6 +30,7 @@ public class RegisterService {
 
     /**
      * 用户激活方法
+     *
      * @param activeCode 激活码
      */
     public void active(String activeCode) {
@@ -40,5 +41,23 @@ public class RegisterService {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 校验用户名是否存在
+     *
+     * @param username
+     * @return
+     */
+    public boolean checkUserName(String username) {
+        UserDao dao = new UserDao();
+        Long result = null;
+        try {
+            result = dao.checkUserName(username);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result > 0;
     }
 }

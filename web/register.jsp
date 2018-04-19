@@ -8,10 +8,91 @@
 <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
 <script src="js/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="js/bootstrap.min.js" type="text/javascript"></script>
+<%--引入表单校验插件--%>
+<script src="js/jquery.validate.min.js" type="text/javascript"></script>
 <!-- 引入自定义css文件 style.css -->
 <link rel="stylesheet" href="css/style.css" type="text/css"/>
+<script type="text/javascript">
+    <%--自定义校验规则--%>
+    $.validator.addMethod(
+        //校验规则的名称
+        "checkUsername",
+        //校验的方法
+        function (value, element, params) {
+            var flag = true;
+            //value 输入的内容
+            //元素对象
+            //规则对应的参数值
+            $.ajax({
+                "async": false,
+                "data": {"username": value},
+                "dataType": "json",
+                "type": "POST",
+                "url": "${pageContext.request.contextPath}/checkUsername",
+                "success": function (data) {
+                    flag = data.isExist;
 
+                }
+            });
+            //返回结果标注能不能通过 false表示校验器不通过
+            return !flag;
+        }
+    );
+    $(function () {
+        $("#myform").validate({
+            rules: {
+                "username": {
+                    "required": true,
+                    "checkUsername": true
+                },
+                "password": {
+                    "required": true,
+                    "rangelength": [6, 12]
+                },
+                "repassword": {
+                    "required": true,
+                    "rangelength": [6, 12],
+                    "equalTo": "#password"
+
+                },
+                "email": {
+                    "required": true,
+                    "email": true
+
+                },
+                "sex": {
+                    "required": true
+                }
+
+            },
+            messages: {
+                "username": {
+                    "required": "用户名不能为空",
+                    "checkUsername": "用户名已存在"
+                },
+                "password": {
+                    "required": "密码不能为空",
+                    "rangelength": "密码长度在6-12位"
+                },
+                "repassword": {
+                    "required": "重复密码不能为空",
+                    "rangelength": "密码长度在6-12位",
+                    "equalTo": "两次密码不一致"
+                },
+                "email": {
+                    "required": "邮箱不能为空",
+                    "email": "邮箱格式不正确"
+                }
+
+            }
+        })
+    })
+</script>
 <style>
+    .error {
+        color: red;
+    }
+
     body {
         margin-top: 20px;
         margin: 0 auto;
@@ -42,7 +123,7 @@
         <div class="col-md-8"
              style="background: #fff; padding: 40px 80px; margin: 30px; border: 7px solid #ccc;">
             <font>会员注册</font>USER REGISTER
-            <form class="form-horizontal" action="${pageContext.request.contextPath}/register" method="post"
+            <form id="myform" class="form-horizontal" action="${pageContext.request.contextPath}/register" method="post"
                   style="margin-top: 5px;">
                 <div class="form-group">
                     <label for="username" class="col-sm-2 control-label">用户名</label>
@@ -54,14 +135,14 @@
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">密码</label>
                     <div class="col-sm-6">
-                        <input type="password" class="form-control" id="inputPassword3" name="password"
+                        <input type="password" class="form-control" id="password" name="password"
                                placeholder="请输入密码">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="confirmpwd" class="col-sm-2 control-label">确认密码</label>
                     <div class="col-sm-6">
-                        <input type="password" class="form-control" id="confirmpwd"
+                        <input type="password" class="form-control" id="confirmpwd" name="repassword"
                                placeholder="请输入确认密码">
                     </div>
                 </div>
@@ -89,6 +170,7 @@
                         <input type="radio" name="sex" id="sex2" value="female">
                         女
                     </label>
+                        <label class="error" for="sex" style="display: none">没有第三种选择</label>
                     </div>
                 </div>
                 <div class="form-group">
