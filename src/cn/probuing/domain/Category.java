@@ -6,14 +6,14 @@ package cn.probuing.domain;
  * @Description: 分类实体类
  */
 public class Category {
-    private int cid;
+    private String cid;
     private String cname;
 
-    public int getCid() {
+    public String getCid() {
         return cid;
     }
 
-    public void setCid(int cid) {
+    public void setCid(String cid) {
         this.cid = cid;
     }
 
