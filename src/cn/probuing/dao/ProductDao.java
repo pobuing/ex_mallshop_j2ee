@@ -1,5 +1,6 @@
 package cn.probuing.dao;
 
+import cn.probuing.domain.Category;
 import cn.probuing.domain.Product;
 import cn.probuing.utils.DataSourceUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -33,5 +34,17 @@ public class ProductDao {
         String sql = "select * from product order by pdate desc limit ?,?";
         List<Product> products = runner.query(sql, new BeanListHandler<Product>(Product.class), 0, 9);
         return products;
+    }
+
+    /**
+     * 数据库操作查询全部分类
+     *
+     * @return
+     */
+    public List<Category> findAllCategory() throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "select * from category";
+        List<Category> categoryList = runner.query(sql, new BeanListHandler<Category>(Category.class));
+        return categoryList;
     }
 }

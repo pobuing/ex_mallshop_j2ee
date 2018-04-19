@@ -1,5 +1,6 @@
 package cn.probuing.web.servlet;
 
+import cn.probuing.domain.Category;
 import cn.probuing.domain.Product;
 import cn.probuing.service.ProductService;
 
@@ -27,11 +28,16 @@ public class IndexServlet extends HttpServlet {
 
         //准备热门商品数据----List<Product>
         List<Product> hotProductList = productService.findHotProduct();
-        request.setAttribute("hotProductList", hotProductList);
         //准备最新商品数据
         List<Product> newProductList = productService.findNewProduct();
+        //准备分类数据
+        List<Category> categoryList = productService.findAllCategory();
+
+        //放置数据到request域中
+        request.setAttribute("hotProductList", hotProductList);
         request.setAttribute("newProductList", newProductList);
+        request.setAttribute("categoryList", categoryList);
         request.getRequestDispatcher("/index.jsp")
-                .forward(request,response);
+                .forward(request, response);
     }
 }

@@ -1,6 +1,7 @@
 package cn.probuing.service;
 
 import cn.probuing.dao.ProductDao;
+import cn.probuing.domain.Category;
 import cn.probuing.domain.Product;
 
 import java.sql.SQLException;
@@ -44,5 +45,21 @@ public class ProductService {
             e.printStackTrace();
         }
         return newProducts;
+    }
+
+    /**
+     * 查询所有分类
+     *
+     * @return
+     */
+    public List<Category> findAllCategory() {
+        ProductDao productDao = new ProductDao();
+        List<Category> categoryList = null;
+        try {
+            categoryList = productDao.findAllCategory();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categoryList;
     }
 }
