@@ -32,4 +32,16 @@ public class UserDao {
                 user.getCode());
         return update;
     }
+
+    /**
+     * 数据库激活方法
+     *
+     * @param activeCode
+     */
+    public void active(String activeCode) throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "update user set state=? where code=?";
+        runner.update(sql, 1, activeCode);
+
+    }
 }

@@ -7,6 +7,14 @@
         <servlet-name>RegisterServlet</servlet-name>
         <servlet-class>cn.probuing.web.servlet.RegisterServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ActiveServlet</servlet-name>
+        <servlet-class>cn.probuing.web.servlet.ActiveServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ActiveServlet</servlet-name>
+        <url-pattern>/active</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
         <url-pattern>/register</url-pattern>

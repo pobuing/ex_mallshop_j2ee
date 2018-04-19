@@ -27,4 +27,18 @@ public class RegisterService {
         }
         return row > 0 ? true : false;
     }
+
+    /**
+     * 用户激活方法
+     * @param activeCode 激活码
+     */
+    public void active(String activeCode) {
+        UserDao dao = new UserDao();
+        try {
+            dao.active(activeCode);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
