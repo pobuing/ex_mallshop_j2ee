@@ -42,12 +42,12 @@
 
     <c:forEach items="${pageBean.list}" var="product">
         <div class="col-md-2" style="height: 250px">
-            <a href="${pageContext.request.contextPath}/productinfo?pid=${product.pid}&cid=${cid}&currentPage=${pageBean.currentPage}">
+            <a href="${pageContext.request.contextPath}/product?method=productInfo&pid=${product.pid}&cid=${cid}&currentPage=${pageBean.currentPage}">
                 <img src="${pageContext.request.contextPath}/${product.pimage}" width="170" height="170"
                      style="display: inline-block;">
             </a>
             <p>
-                <a href="${pageContext.request.contextPath}/productinfo?pid=${product.pid}&cid=${cid}&currentPage=${pageBean.currentPage}"
+                <a href="${pageContext.request.contextPath}/product?method=productInfo&pid=${product.pid}&cid=${cid}&currentPage=${pageBean.currentPage}"
                    style='color: green'>${product.pname}</a>
             </p>
             <p>
@@ -75,7 +75,7 @@
         </c:if>
         <c:if test="${pageBean.currentPage!=1}">
             <li>
-                <a href="${pageContext.request.contextPath}/productListByCid?cid=${cid}&currentPage=${pageBean.currentPage-1}"
+                <a href="${pageContext.request.contextPath}/product?method=productInfo&cid=${cid}&currentPage=${pageBean.currentPage-1}"
                    aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span></a>
             </li>
@@ -88,7 +88,7 @@
             </c:if>
             <c:if test="${page!=pageBean.currentPage}">
                 <li>
-                    <a href="${pageContext.request.contextPath}/productListByCid?cid=${cid}&currentPage=${page}">${page}</a>
+                    <a href="${pageContext.request.contextPath}/product?method=productInfo&cid=${cid}&currentPage=${page}">${page}</a>
                 </li>
             </c:if>
         </c:forEach>
@@ -104,7 +104,7 @@
         <c:if test="${pageBean.currentPage!=pageBean.totalPage}">
 
             <li>
-                <a href="${pageContext.request.contextPath}/productListByCid?cid=${cid}&currentPage=${pageBean.currentPage+1}"
+                <a href="${pageContext.request.contextPath}/product?method=productInfo&cid=${cid}&currentPage=${pageBean.currentPage+1}"
                    aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>

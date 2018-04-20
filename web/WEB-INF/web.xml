@@ -19,37 +19,15 @@
         <servlet-name>CheckUserNameServlet</servlet-name>
         <servlet-class>cn.probuing.web.servlet.CheckUserNameServlet</servlet-class>
     </servlet>
+
+
     <servlet>
-        <servlet-name>IndexServlet</servlet-name>
-        <servlet-class>cn.probuing.web.servlet.IndexServlet</servlet-class>
+        <servlet-name>ProductServlet</servlet-name>
+        <servlet-class>cn.probuing.web.servlet.ProductServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>CategoryServlet</servlet-name>
-        <url-pattern>/categoryList</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>CategoryServlet</servlet-name>
-        <servlet-class>cn.probuing.web.servlet.CategoryListServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ProductListByCidServlet</servlet-name>
-        <servlet-class>cn.probuing.web.servlet.ProductListByCidServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ProductInfoServlet</servlet-name>
-        <servlet-class>cn.probuing.web.servlet.ProductInfoServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>ProductInfoServlet</servlet-name>
-        <url-pattern>/productinfo</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ProductListByCidServlet</servlet-name>
-        <url-pattern>/productListByCid</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>IndexServlet</servlet-name>
-        <url-pattern>/index</url-pattern>
+        <servlet-name>ProductServlet</servlet-name>
+        <url-pattern>/product</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CheckUserNameServlet</servlet-name>
