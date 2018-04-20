@@ -2,6 +2,7 @@ package cn.probuing.service;
 
 import cn.probuing.dao.ProductDao;
 import cn.probuing.domain.Category;
+import cn.probuing.domain.PageBean;
 import cn.probuing.domain.Product;
 
 import java.sql.SQLException;
@@ -61,5 +62,55 @@ public class ProductService {
             e.printStackTrace();
         }
         return categoryList;
+    }
+
+    /**
+     * 根据cid查询商品数据
+     *
+     * @param cid
+     * @param currentPage
+     * @param currentCount
+     * @return
+     */
+    public PageBean<Product> findProductListByCid(String cid, int currentPage, int currentCount) {
+        PageBean<Product> pageBean = new PageBean<>();
+        ProductDao productDao = new ProductDao();
+        //封装当前页
+        pageBean.setCurrentPage(currentPage);
+        pageBean.setCurrentCount(currentCount);
+        int totalCount = 0;
+        try {
+            totalCount = productDao.getCount(cid);
+
+            pageBean.setTotalCount(totalCount);
+            //封装总页数
+            int totalPage = (int) Math.ceil(1.0 * totalCount / currentCount);
+            pageBean.setTotalPage(totalPage);
+            //获取当前页显示的数据
+            int index = (currentPage - 1) * currentCount;
+            List<Product> productList = productDao.findProductByPage(cid, index, currentCount);
+            pageBean.setList(productList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return pageBean;
+    }
+
+    /**
+     * 通过pid获取product对象
+     *
+     * @param pid
+     * @return
+     */
+    public Product findProductByPid(String pid) {
+        ProductDao productDao = new ProductDao();
+        Product product = null;
+        try {
+            product = productDao.findProductByPid(pid);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return product;
     }
 }

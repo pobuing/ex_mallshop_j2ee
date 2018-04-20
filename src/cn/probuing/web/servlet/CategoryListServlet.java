@@ -34,9 +34,9 @@ public class CategoryListServlet extends HttpServlet {
             //转换json
             categoryListJson = gson.toJson(categoryList);
             jedis.set("categoryListJson", categoryListJson);
-            System.out.println("已经存储到redis" + categoryListJson);
+//            System.out.println("已经存储到redis" + categoryListJson);
         } else {
-            System.out.println("查询到缓存" + categoryListJson);
+//            System.out.println("查询到缓存" + categoryListJson);
         }
 
         // TODO: 2018/4/19 处理中文乱码问题
