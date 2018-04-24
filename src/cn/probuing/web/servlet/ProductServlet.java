@@ -1,8 +1,6 @@
 package cn.probuing.web.servlet;
 
-import cn.probuing.domain.Category;
-import cn.probuing.domain.PageBean;
-import cn.probuing.domain.Product;
+import cn.probuing.domain.*;
 import cn.probuing.service.ProductService;
 import cn.probuing.utils.JedisPoolUtils;
 import com.google.gson.Gson;
@@ -10,22 +8,19 @@ import redis.clients.jedis.Jedis;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Auther: wxblack-mac
  * @Date: 2018/4/20 17:24
  * @Description:
  */
-public class ProductServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+public class ProductServlet extends BaseServlet {
+   /* protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doGet(request, response);
     }
 
@@ -42,10 +37,10 @@ public class ProductServlet extends HttpServlet {
             productInfo(request, response);
         }
 
-    }
+    }*/
 
     //显示商品类别的功能
-    protected void categoryList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void categoryList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //准备分类数据
         ProductService productService = new ProductService();
         //先从缓存中查询categoryList,如果有直接使用，如果没有则从数据库读取，然后再存储到redis中
@@ -70,7 +65,7 @@ public class ProductServlet extends HttpServlet {
     }
 
     //显示首页功能
-    protected void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         ProductService productService = new ProductService();
 
@@ -91,7 +86,7 @@ public class ProductServlet extends HttpServlet {
     }
 
     //显示商品的详细信息
-    protected void productInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void productInfo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //获取商品的pid
         String pid = request.getParameter("pid");
         String currentPage = request.getParameter("currentPage");
@@ -139,7 +134,7 @@ public class ProductServlet extends HttpServlet {
     }
 
     //根据商品的类别获取商品的列表
-    protected void productList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void productList(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //获得cid
         String cid = request.getParameter("cid");
         String currentPage = request.getParameter("currentPage");
@@ -173,5 +168,63 @@ public class ProductServlet extends HttpServlet {
         //请求转发
         request.getRequestDispatcher("/product_list.jsp").forward(request, response);
     }
+
+    public void addProductToCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        //从session域对象中获得购物车
+        HttpSession session = request.getSession();
+        ProductService service = new ProductService();
+        //获得放入购物车的商品的pid
+        String pid = request.getParameter("pid");
+        //获得该商品的数量
+        int buyNum = Integer.parseInt(request.getParameter("buyNum"));
+        //获得购买的product对象
+        Product product = service.findProductByPid(pid);
+        //计算小计
+        double subtotal = product.getShop_price() * buyNum;
+        //封装购物车对象
+        CartItem cartItem = new CartItem();
+        cartItem.setBuyNum(buyNum);
+        cartItem.setProduct(product);
+        cartItem.setSubtotal(subtotal);
+        Cart cart = (Cart) session.getAttribute("cart");
+        //判断购物车是否存在
+        if (cart == null) {
+            cart = new Cart();
+        }
+        Map<String, CartItem> cartItems = cart.getCartItems();
+        //存储购物项
+        //新买的商品的小计
+        double newsubTotal = buyNum * product.getShop_price();
+        //判断购物车中是否已经包含此商品
+        if (cartItems.containsKey(product.getPid())) {
+            //购物车中已经有该商品，将现在买的数量与原有的数量进行相加操作
+            CartItem item = cartItems.get(pid);
+            int oldBuyNum = item.getBuyNum();
+            //相加数量
+            oldBuyNum += buyNum;
+            item.setBuyNum(oldBuyNum);
+            //重新计算小计
+//            item.setShbtotal(oldBuyNum*product.getShop_price());
+            //原来的商品小计
+            double oldSubTotal = item.getSubtotal();
+            //现在的商品item购买的小计
+            item.setSubtotal(oldSubTotal + newsubTotal);
+        } else {
+            cartItems.put(product.getPid(), cartItem);
+        }
+        //计算商品总计
+        double total = cart.getTotal() + newsubTotal;
+        cart.setTotal(total);
+        //数据存储到session域对象中
+        session.setAttribute("cart", cart);
+        //跳转到购物页面
+//        request.getRequestDispatcher("/cart.jsp").forward(request, response);
+        /**
+         * 防止刷新 重复调用方法 采用重定向
+         */
+        response.sendRedirect(request.getContextPath() + "/cart.jsp");
+    }
+
 
 }
