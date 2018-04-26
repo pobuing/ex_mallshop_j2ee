@@ -226,5 +226,42 @@ public class ProductServlet extends BaseServlet {
         response.sendRedirect(request.getContextPath() + "/cart.jsp");
     }
 
+    /**
+     * 从购物车中删除某一个商品
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    public void delProFromCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String pid = request.getParameter("pid");
+        //删除session购物车中的购物项集合中的item
+        HttpSession session = request.getSession();
+        Cart cart = (Cart) session.getAttribute("cart");
+        if (cart != null) {
+            Map<String, CartItem> cartItems = cart.getCartItems();
+            CartItem removeItem = cartItems.remove(pid);
+            //重新计算总价
+            cart.setTotal(cart.getTotal() - removeItem.getSubtotal());
+        }
+        session.setAttribute("cart", cart);
+        //跳转回购物车页面
+        response.sendRedirect(request.getContextPath() + "/cart.jsp");
+    }
 
+    /**
+     * 清空购物车
+     *
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
+     */
+    public void clearCart(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        session.removeAttribute("cart");
+        //跳转到购物车页面
+        response.sendRedirect(request.getContextPath() + "/cart.jsp");
+    }
 }

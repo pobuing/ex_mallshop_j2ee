@@ -30,8 +30,16 @@
         }
     </style>
     <script type="text/javascript">
-        function delProFromCart() {
+        function delProFromCart(pid) {
+            if (confirm("您是否要删除")) {
+                location.href = "${pageContext.request.contextPath}/product?method=delProFromCart&pid=" + pid;
+            }
+        }
 
+        function clearCart() {
+            if (confirm("您是否要清空购物车")) {
+                location.href = "${pageContext.request.contextPath}/product?method=clearCart"
+            }
         }
 
     </script>
@@ -40,6 +48,7 @@
 <body>
 <!-- 引入header.jsp -->
 <jsp:include page="/header.jsp"></jsp:include>
+<c:if test="${!empty cart.cartItems}">
 
 <div class="container">
     <div class="row">
@@ -77,7 +86,8 @@
                             <span class="subtotal">￥${entry.value.subtotal}</span>
                         </td>
                         <td>
-                            <a href="javascript:;" onclick="delProFromCart()" class="delete">删除</a>
+                            <a href="javascript:;" onclick="delProFromCart('${entry.value.product.pid}')"
+                               class="delete">删除</a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -91,17 +101,24 @@
         <div style="text-align:right;">
             <em style="color:#ff6600;">
                 登录后确认是否享有优惠&nbsp;&nbsp;
-            </em> 赠送积分: <em style="color:#ff6600;">${cart.total}</em>&nbsp; 商品金额: <strong style="color:#ff6600;">￥${cart.total}元</strong>
+            </em> 赠送积分: <em style="color:#ff6600;">${cart.total}</em>&nbsp; 商品金额: <strong
+                style="color:#ff6600;">￥${cart.total}元</strong>
         </div>
         <div style="text-align:right;margin-top:10px;margin-bottom:10px;">
-            <a href="order_info.htm" id="clear" class="clear">清空购物车</a>
+            <a href="javascript:;" onclick="clearCart()" id="clear" class="clear">清空购物车</a>
             <a href="order_info.htm">
                 <input type="submit" width="100" value="提交订单" name="submit" border="0" style="background: url('./images/register.gif') no-repeat scroll 0 0 rgba(0, 0, 0, 0);
 						height:35px;width:100px;color:white;">
             </a>
         </div>
     </div>
-
+    </c:if>
+    <c:if test="${empty cart.cartItems}">
+        <div>
+            <img src="${pageContext.request.contextPath}/images/cart-empty.png">
+            <a href="${pageContext.request.contextPath}">返回首页</a>
+        </div>
+    </c:if>
 </div>
 
 <!-- 引入footer.jsp -->
