@@ -12,8 +12,16 @@
     </div>
     <div class="col-md-3" style="padding-top:20px">
         <ol class="list-inline">
-            <li><a href="login.jsp">登录</a></li>
-            <li><a href="register.jsp">注册</a></li>
+            <c:if test="${empty user }">
+                <li><a href="login.jsp">登录</a></li>
+                <li><a href="register.jsp">注册</a></li>
+            </c:if>
+            <c:if test="${!empty user }">
+                <li>欢迎您,${user.username }</li>
+                <li><a href="#">退出</a></li>
+            </c:if>
+
+
             <li><a href="cart.jsp">购物车</a></li>
             <li><a href="order_list.jsp">我的订单</a></li>
         </ol>
@@ -33,7 +41,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">首页</a>
+                <a class="navbar-brand" href="${pageContext.request.contextPath}">首页</a>
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">

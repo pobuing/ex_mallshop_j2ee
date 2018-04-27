@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <!DOCTYPE html>
@@ -22,7 +23,15 @@
             height: 300px;
         }
     </style>
+    <script type="text/javascript">
+        function addCart() {
+            //获得商品的购买数量
+            var buyNum = $("#quantity").val();
+            location.href = "${pageContext.request.contextPath}/product?method=addProductToCart&pid=${product.pid}&buyNum=" + buyNum;
+        }
+    </script>
 </head>
+
 
 <body>
 <!-- 引入header.jsp -->
@@ -73,14 +82,17 @@
                     </div>
 
                     <div style="margin: 20px 0 10px 0;; text-align: center;">
-                        <a href="cart.htm"> <input
-                                style="background: url('./images/product.gif') no-repeat scroll 0 -600px rgba(0, 0, 0, 0); height: 36px; width: 127px;"
-                                value="加入购物车" type="button">
+                        <a href="javascript:void(0)" onclick="addCart()">
+                            <input style="background: url('./images/product.gif') no-repeat scroll 0 -600px rgba(0, 0, 0, 0); height: 36px; width: 127px;"
+                                   value="加入购物车" type="button">
                         </a> &nbsp;收藏商品
                     </div>
                 </div>
                 <div>
-                    <a href="${pageContext.request.contextPath}/productListByCid?cid=${cid}&currentPage=${currentPage}">返回列表页面</a>
+                    <c:if test="${not empty cid}">
+
+                        <a href="${pageContext.request.contextPath}/product?method=productList&cid=${cid}&currentPage=${currentPage}">返回列表页面</a>
+                    </c:if>
                 </div>
             </div>
         </div>

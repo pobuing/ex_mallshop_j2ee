@@ -2,8 +2,10 @@ package cn.probuing.service;
 
 import cn.probuing.dao.ProductDao;
 import cn.probuing.domain.Category;
+import cn.probuing.domain.Order;
 import cn.probuing.domain.PageBean;
 import cn.probuing.domain.Product;
+import cn.probuing.utils.DataSourceUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -112,5 +114,39 @@ public class ProductService {
             e.printStackTrace();
         }
         return product;
+    }
+
+    /**
+     * 提交订单到数据库
+     *
+     * @param order
+     */
+    public void submitOrder(Order order) {
+        //开启事物
+        try {
+            DataSourceUtils.startTransaction();
+            ProductDao dao = new ProductDao();
+            dao.addOrders(order);
+            dao.addOrderItem(order);
+        } catch (SQLException e) {
+            try {
+                DataSourceUtils.rollback();
+                e.printStackTrace();
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        } finally {
+            try {
+                DataSourceUtils.commitAndRelease();
+            } catch (SQLException e) {
+                try {
+                    DataSourceUtils.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+
+            }
+        }
+
     }
 }

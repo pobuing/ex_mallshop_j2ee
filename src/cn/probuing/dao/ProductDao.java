@@ -1,6 +1,8 @@
 package cn.probuing.dao;
 
 import cn.probuing.domain.Category;
+import cn.probuing.domain.Order;
+import cn.probuing.domain.OrderItem;
 import cn.probuing.domain.Product;
 import cn.probuing.utils.DataSourceUtils;
 import org.apache.commons.dbutils.QueryRunner;
@@ -86,5 +88,41 @@ public class ProductDao {
         String sql = "select * from product where pid= ?";
         Product product = runner.query(sql, new BeanHandler<Product>(Product.class), pid);
         return product;
+    }
+
+    /**
+     * 数据库存储订单数据
+     *
+     * @param order
+     */
+    public void addOrders(Order order) throws SQLException {
+        QueryRunner runner = new QueryRunner();
+        String sql = "insert into orders values(?,?,?,?,?,?,?,?)";
+        runner.update(DataSourceUtils.getConnection(),sql,order.getOid(),
+                order.getOrderTime(),
+                order.getTotal(),
+                order.getState(),
+                order.getAddress(),
+                order.getName(),
+                order.getTelephone(),
+                order.getUser().getUid());
+    }
+
+    /**
+     * 添加订单项数据
+     *
+     * @param order
+     */
+    public void addOrderItem(Order order) throws SQLException {
+        QueryRunner runner = new QueryRunner();
+        String sql = "insert into orderitem values(?,?,?,?,?)";
+        List<OrderItem> orderItems = order.getOrderItems();
+        for (OrderItem orderItem : orderItems) {
+            runner.update(DataSourceUtils.getConnection(),sql,orderItem.getItemid(),
+                    orderItem.getCount(),orderItem.getSubtotal(),
+                    orderItem.getProduct().getPid(),
+                    orderItem.getOrder().getOid());
+        }
+
     }
 }
