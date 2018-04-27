@@ -2,6 +2,7 @@ package cn.probuing.web.servlet;
 
 import cn.probuing.domain.*;
 import cn.probuing.service.ProductService;
+import cn.probuing.utils.CommonsUtils;
 import cn.probuing.utils.JedisPoolUtils;
 import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
@@ -263,5 +264,97 @@ public class ProductServlet extends BaseServlet {
         session.removeAttribute("cart");
         //跳转到购物车页面
         response.sendRedirect(request.getContextPath() + "/cart.jsp");
+    }
+
+    public void submitOrder(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //判断用户是否已经登录
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        //取出购物车
+        Cart cart = (Cart) session.getAttribute("cart");
+        if (user == null) {
+            //未登录
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            return;
+        }
+        //登录状态
+        //封装好一个Order对象 传递给service层
+        Order order = new Order();
+        //订单编号
+        String oid = CommonsUtils.getUUID();
+        order.setOid(oid);
+        //下单时间
+        order.setOrderTime(new Date());
+        //0 未付款  1已付款
+        order.setState(0);
+        order.setAddress(null);
+        order.setName(null);
+        order.setTelephone(null);
+        order.setUser(user);
+
+        ProductService service = new ProductService();
+        //金额
+        if (cart != null) {
+            double total = cart.getTotal();
+            order.setTotal(total);
+            //该订单中的订单项
+            Map<String, CartItem> cartItems = cart.getCartItems();
+            for (Map.Entry<String, CartItem> cartItemEntry : cartItems.entrySet()) {
+                CartItem cartItemEntryValue = cartItemEntry.getValue();
+                OrderItem orderItem = new OrderItem();
+                orderItem.setItemid(CommonsUtils.getUUID());
+                orderItem.setCount(cartItemEntryValue.getBuyNum());
+                orderItem.setSubtotal(cartItemEntryValue.getSubtotal());
+                orderItem.setProduct(cartItemEntryValue.getProduct());
+                orderItem.setOrder(order);
+                //将订单添加到订单项中
+                order.getOrderItems().add(orderItem);
+
+            }
+            //提交订单到数据库
+            service.submitOrder(order);
+        }
+    }
+    public void productListByCid(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        //获得cid
+        String cid = request.getParameter("cid");
+
+        String currentPageStr = request.getParameter("currentPage");
+        if(currentPageStr==null) currentPageStr="1";
+        int currentPage = Integer.parseInt(currentPageStr);
+        int currentCount = 12;
+
+        ProductService service = new ProductService();
+        PageBean pageBean = service.findProductListByCid(cid,currentPage,currentCount);
+
+        request.setAttribute("pageBean", pageBean);
+        request.setAttribute("cid", cid);
+
+        //定义一个记录历史商品信息的集合
+        List<Product> historyProductList = new ArrayList<Product>();
+
+        //获得客户端携带名字叫pids的cookie
+        Cookie[] cookies = request.getCookies();
+        if(cookies!=null){
+            for(Cookie cookie:cookies){
+                if("pids".equals(cookie.getName())){
+                    String pids = cookie.getValue();//3-2-1
+                    String[] split = pids.split("-");
+                    for(String pid : split){
+                        Product pro = service.findProductByPid(pid);
+                        historyProductList.add(pro);
+                    }
+                }
+            }
+        }
+
+        //将历史记录的集合放到域中
+        request.setAttribute("historyProductList", historyProductList);
+
+
+        request.getRequestDispatcher("/product_list.jsp").forward(request, response);
+
     }
 }

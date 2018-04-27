@@ -3,6 +3,7 @@ package cn.probuing.dao;
 import cn.probuing.domain.User;
 import cn.probuing.utils.DataSourceUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.SQLException;
@@ -58,5 +59,19 @@ public class UserDao {
         String sql = "select count(*) from user where username=?";
         return (Long) runner.query(sql, new ScalarHandler(), username);
 
+    }
+
+    /**
+     * 查询数据库，用户登录
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    public User login(String username, String password) throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "select * from user where username=? and password=?";
+        User user = runner.query(sql, new BeanHandler<User>(User.class), username, password);
+        return user;
     }
 }
