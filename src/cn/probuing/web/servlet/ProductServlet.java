@@ -5,6 +5,7 @@ import cn.probuing.service.ProductService;
 import cn.probuing.utils.CommonsUtils;
 import cn.probuing.utils.JedisPoolUtils;
 import com.google.gson.Gson;
+import org.apache.commons.beanutils.BeanUtils;
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -313,8 +316,41 @@ public class ProductServlet extends BaseServlet {
             }
             //提交订单到数据库
             service.submitOrder(order);
+            session.setAttribute("order", order);
+            //页面跳转
+            response.sendRedirect(request.getContextPath() + "/order_info.jsp");
         }
     }
+
+    /**
+     * 提交订单，更新收货人信息 确认支付
+     *
+     * @param request
+     * @param response
+     */
+    public void confirmOrder(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        //封装收货人信息，更新到数据库
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        Order order = new Order();
+        try {
+            BeanUtils.populate(order, parameterMap);
+            ProductService service = new ProductService();
+            service.updateOrderAdrr(order);
+            //在线支付
+            //获得选择的支付方式
+            String pd_frpId = request.getParameter("pd_FrpId");
+            if (pd_frpId.equals("BOC-NET-B2C")) {
+
+            }
+            service.updateOrderState(order);
+            // TODO:  重定向到支付回调界面
+            response.sendRedirect(request.getContextPath() + "/paycallback");
+        } catch (IllegalAccessException | InvocationTargetException | SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void productListByCid(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -322,12 +358,12 @@ public class ProductServlet extends BaseServlet {
         String cid = request.getParameter("cid");
 
         String currentPageStr = request.getParameter("currentPage");
-        if(currentPageStr==null) currentPageStr="1";
+        if (currentPageStr == null) currentPageStr = "1";
         int currentPage = Integer.parseInt(currentPageStr);
         int currentCount = 12;
 
         ProductService service = new ProductService();
-        PageBean pageBean = service.findProductListByCid(cid,currentPage,currentCount);
+        PageBean pageBean = service.findProductListByCid(cid, currentPage, currentCount);
 
         request.setAttribute("pageBean", pageBean);
         request.setAttribute("cid", cid);
@@ -337,12 +373,12 @@ public class ProductServlet extends BaseServlet {
 
         //获得客户端携带名字叫pids的cookie
         Cookie[] cookies = request.getCookies();
-        if(cookies!=null){
-            for(Cookie cookie:cookies){
-                if("pids".equals(cookie.getName())){
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("pids".equals(cookie.getName())) {
                     String pids = cookie.getValue();//3-2-1
                     String[] split = pids.split("-");
-                    for(String pid : split){
+                    for (String pid : split) {
                         Product pro = service.findProductByPid(pid);
                         historyProductList.add(pro);
                     }
@@ -357,4 +393,56 @@ public class ProductServlet extends BaseServlet {
         request.getRequestDispatcher("/product_list.jsp").forward(request, response);
 
     }
+
+    /**
+     * 查询我的订单
+     *
+     * @param request
+     * @param response
+     */
+    public void myOrders(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            //判断用户是否已经登录
+            HttpSession session = request.getSession();
+            User user = (User) session.getAttribute("user");
+            //取出购物车
+            if (user == null) {
+                //未登录
+                response.sendRedirect(request.getContextPath() + "/login.jsp");
+                return;
+            }
+            //查询用户所有的订单
+            ProductService productService = new ProductService();
+            List<Order> orderList = productService.findAllOrders(user.getUid());
+            if (orderList != null) {
+
+                for (Order order : orderList) {
+                    //循环所有订单，为每个订单填充订单项信息
+                    String oid = order.getOid();
+                    //查询该订单的所有的订单项
+                    List<Map<String, Object>> mapList = productService.findAllOrderItemByOid(oid);
+                    //将mapList转换成List<OrderItem>
+                    for (Map<String, Object> map : mapList) {
+                        //从map中取出count subtotal 封装到orderitem中
+                        OrderItem orderItem = new OrderItem();
+                        //从map中取出pimage pname shop_price 封装到product
+                        BeanUtils.populate(orderItem, map);
+                        //将product 封装到orderItem中
+                        Product product = new Product();
+                        BeanUtils.populate(product, map);
+                        orderItem.setProduct(product);
+                        //将orderItem封装到order中
+                        order.getOrderItems().add(orderItem);
+
+                    }
+                }
+                //order封装完整存储到域中
+                request.setAttribute("orderList", orderList);
+                request.getRequestDispatcher("/order_list.jsp").forward(request, response);
+            }
+        } catch (SQLException | IllegalAccessException | InvocationTargetException | ServletException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

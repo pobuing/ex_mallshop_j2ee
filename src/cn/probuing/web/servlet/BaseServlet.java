@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 public class BaseServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("utf-8");
         String methodName = req.getParameter("method");
         //获取调用者的字节码对象
         Class<? extends BaseServlet> aClass = this.getClass();

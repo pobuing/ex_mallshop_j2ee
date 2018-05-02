@@ -8,10 +8,12 @@ import cn.probuing.utils.DataSourceUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: wxblack-mac
@@ -98,7 +100,7 @@ public class ProductDao {
     public void addOrders(Order order) throws SQLException {
         QueryRunner runner = new QueryRunner();
         String sql = "insert into orders values(?,?,?,?,?,?,?,?)";
-        runner.update(DataSourceUtils.getConnection(),sql,order.getOid(),
+        runner.update(DataSourceUtils.getConnection(), sql, order.getOid(),
                 order.getOrderTime(),
                 order.getTotal(),
                 order.getState(),
@@ -118,11 +120,48 @@ public class ProductDao {
         String sql = "insert into orderitem values(?,?,?,?,?)";
         List<OrderItem> orderItems = order.getOrderItems();
         for (OrderItem orderItem : orderItems) {
-            runner.update(DataSourceUtils.getConnection(),sql,orderItem.getItemid(),
-                    orderItem.getCount(),orderItem.getSubtotal(),
+            runner.update(DataSourceUtils.getConnection(), sql, orderItem.getItemid(),
+                    orderItem.getCount(), orderItem.getSubtotal(),
                     orderItem.getProduct().getPid(),
                     orderItem.getOrder().getOid());
         }
 
+    }
+
+    public void updateOrderAdrr(Order order) throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "update orders set address=?,name=?,telephone=? where oid=?";
+        runner.update(sql, order.getAddress(), order.getName(), order.getTelephone(), order.getOid());
+    }
+
+    /**
+     * 操作数据库 修改订单状态
+     *
+     * @param order
+     */
+    public void updateOrderState(Order order) throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "update orders set state=? where oid=?";
+        runner.update(sql, 1, order.getOid());
+    }
+
+    /**
+     * 数据库操作获取订单集合
+     *
+     * @param uId
+     * @return
+     */
+    public List<Order> findAllOrders(String uId) throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "select * from orders where uid=?";
+        return runner.query(sql, new BeanListHandler<Order>(Order.class), uId);
+    }
+
+    public List<Map<String, Object>> findAllOrderItemByOid(String oid) throws SQLException {
+        QueryRunner runner = new QueryRunner(DataSourceUtils.getDataSource());
+        String sql = "select i.count,i.subtotal,p.pimage,p.pname,p.shop_price from orderitem i,product p where i.pid=p.pid and i.oid=?";
+        List<Map<String, Object>> mapList = runner.query(sql, new MapListHandler(), oid);
+
+        return mapList;
     }
 }

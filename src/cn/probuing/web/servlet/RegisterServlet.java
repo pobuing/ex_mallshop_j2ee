@@ -67,8 +67,8 @@ public class RegisterServlet extends HttpServlet {
         if (regist) {
             //发送激活邮件
             String emailMsg = "恭喜您注册成功，请点击下面的连接" +
-                    " <a href='http://localhost:8080/mall/active?activeCode=" + activeCode + "'>" + "" +
-                    "http://localhost:8080/mall/active?activeCode=" + activeCode + "</a>";
+                    " <a href='192.168.1.13:8080/mall/active?activeCode=" + activeCode + "'>" + "" +
+                    "http://192.168.1.13:8080/mall/active?activeCode=" + activeCode + "</a>";
             MailUtils.sendMail(user.getEmail(),emailMsg);
             //跳转到注册成功页面
             response.sendRedirect(request.getContextPath() + "/registerSuccess.jsp");

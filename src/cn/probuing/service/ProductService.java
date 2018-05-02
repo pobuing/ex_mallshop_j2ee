@@ -9,6 +9,7 @@ import cn.probuing.utils.DataSourceUtils;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: wxblack-mac
@@ -148,5 +149,38 @@ public class ProductService {
             }
         }
 
+    }
+
+    /**
+     * 更新收货人地址
+     *
+     * @param order
+     */
+    public void updateOrderAdrr(Order order) throws SQLException {
+        ProductDao dao = new ProductDao();
+        dao.updateOrderAdrr(order);
+    }
+
+    /**
+     * 修改订单状态
+     *
+     * @param order 订单实体
+     */
+    public void updateOrderState(Order order) throws SQLException {
+        ProductDao dao = new ProductDao();
+        dao.updateOrderState(order);
+    }
+
+
+    public List<Order> findAllOrders(String uId) throws SQLException {
+        ProductDao dao = new ProductDao();
+        List<Order> list = dao.findAllOrders(uId);
+        return list;
+    }
+
+    public List<Map<String, Object>> findAllOrderItemByOid(String oid) throws SQLException {
+        ProductDao dao = new ProductDao();
+        List<Map<String, Object>> list = dao.findAllOrderItemByOid(oid);
+        return list;
     }
 }

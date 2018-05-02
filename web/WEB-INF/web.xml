@@ -29,6 +29,14 @@
         <servlet-name>UserServlet</servlet-name>
         <servlet-class>cn.probuing.web.servlet.UserServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>PayCallBackServlet</servlet-name>
+        <servlet-class>cn.probuing.web.servlet.PayCallBackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PayCallBackServlet</servlet-name>
+        <url-pattern>/paycallback</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UserServlet</servlet-name>
         <url-pattern>/user</url-pattern>

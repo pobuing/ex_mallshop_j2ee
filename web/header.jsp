@@ -5,7 +5,7 @@
 <!-- 登录 注册 购物车... -->
 <div class="container-fluid">
     <div class="col-md-4">
-        <img src="img/logo2.png"/>
+        <%--<img src="img/logo2.png"/>--%>
     </div>
     <div class="col-md-5">
         <img src="img/header.png"/>
@@ -23,7 +23,7 @@
 
 
             <li><a href="cart.jsp">购物车</a></li>
-            <li><a href="order_list.jsp">我的订单</a></li>
+            <li><a href="${pageContext.request.contextPath}/product?method=myOrders">我的订单</a></li>
         </ol>
     </div>
 </div>
