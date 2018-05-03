@@ -54,7 +54,29 @@ public class UserServlet extends BaseServlet {
             //登录失败 跳转到登录页
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
-
     }
 
+    /**
+     * 退出登录方法
+     *
+     * @param request
+     * @param response
+     * @throws IOException
+     * @throws ServletException
+     */
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        //获得session
+        HttpSession session = request.getSession();
+        //从session中将user删除
+        session.removeAttribute("user");
+        //清除存储在客户端的cookie
+        Cookie cookie_username = new Cookie("cookie_username", "");
+        Cookie cookie_password = new Cookie("cookie_password", "");
+        cookie_username.setMaxAge(0);
+        cookie_password.setMaxAge(0);
+        response.addCookie(cookie_username);
+        response.addCookie(cookie_password);
+        //跳转到登录页
+        response.sendRedirect(request.getContextPath() + "/login.jsp");
+    }
 }

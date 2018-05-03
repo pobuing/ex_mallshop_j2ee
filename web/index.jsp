@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>黑马商城首页</title>
+    <title>商城</title>
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
     <script src="js/jquery-1.11.3.min.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
@@ -83,7 +83,8 @@
                         <img src="${pageContext.request.contextPath}/${hotPro.pimage}" width="130" height="130"
                              style="display: inline-block;">
                     </a>
-                    <p><a href="${pageContext.request.contextPath}/product?method=productInfo&pid=${hotPro.pid}" style='color:#666'>${hotPro.pname}</a></p>
+                    <p><a href="${pageContext.request.contextPath}/product?method=productInfo&pid=${hotPro.pid}"
+                          style='color:#666'>${hotPro.pname}</a></p>
                     <p><font color="#E4393C" style="font-size:16px">&yen;${hotPro.shop_price}</font></p>
                 </div>
             </c:forEach>
@@ -117,7 +118,8 @@
                         <img src="${pageContext.request.contextPath}/${newPro.pimage}" width="130" height="130"
                              style="display: inline-block;">
                     </a>
-                    <p><a href="${pageContext.request.contextPath}/product?method=productInfo&pid=${newPro.pid}" style='color:#666'>${newPro.pname}</a></p>
+                    <p><a href="${pageContext.request.contextPath}/product?method=productInfo&pid=${newPro.pid}"
+                          style='color:#666'>${newPro.pname}</a></p>
                     <p><font color="#E4393C" style="font-size:16px">&yen;${newPro.shop_price}</font></p>
                 </div>
             </c:forEach>

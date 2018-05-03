@@ -18,7 +18,7 @@
             </c:if>
             <c:if test="${!empty user }">
                 <li>欢迎您,${user.username }</li>
-                <li><a href="#">退出</a></li>
+                <li><a href="${pageContext.request.contextPath}/user?method=logout">退出</a></li>
             </c:if>
 
 
