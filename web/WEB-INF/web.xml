@@ -51,6 +51,22 @@
         <servlet-name>PayCallBackServlet</servlet-name>
         <servlet-class>cn.probuing.web.servlet.PayCallBackServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>cn.probuing.web.servlet.AdminServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminAddProductServlet</servlet-name>
+        <servlet-class>cn.probuing.web.servlet.AdminAddProductServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminAddProductServlet</servlet-name>
+        <url-pattern>/adminAddProduct</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/admin</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PayCallBackServlet</servlet-name>
         <url-pattern>/paycallback</url-pattern>
